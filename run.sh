@@ -10,6 +10,7 @@ ONNX_DIR=${ONNX_DIR:="./onnx"}
 OUTPUT_DIR=${OUTPUT_DIR:="./output"}
 TESTLIST=${TESTLIST:=`ls onnx`}
 TIMESTAMP=${TIMESTAMP:=`date '+%Y-%m-%d-%H:%M:%S'`}
+RUNTUNE=${RUNTUNE:=0}
 
 if [ ! -f ${MIGRAPHX_LIBS}/libmigraphx.so ]; then
     echo FAIL migraphx library not found
@@ -25,7 +26,11 @@ do
     testerr=${OUTPUT_DIR}/$testname-${TIMESTAMP}.err
 
     echo $TIMESTAMP " running " $testname
-    ${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr
+    if [ $RUNTUNE != 0 ]; then
+	env MIOPEN_FIND_ENFORCE=3 ${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr
+    else
+	${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr	
+    fi
     if grep "Total time" $testout > lastresult; then
 	echo PASS `cat lastresult`
     else
