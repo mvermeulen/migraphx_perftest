@@ -32,5 +32,3 @@ do
 	echo FAIL `cat $testerr`
     fi
 done
-
-
