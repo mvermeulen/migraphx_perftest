@@ -21,8 +21,8 @@ do
 
     echo $TIMESTAMP " running " $testname
     ${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr
-    if grep "Total timex" $testout > result; then
-	echo PASS `cat result`
+    if grep "Total timex" $testout > lastresult; then
+	echo PASS `cat lastresult`
     else
 	echo FAIL `cat $testerr`
     fi
