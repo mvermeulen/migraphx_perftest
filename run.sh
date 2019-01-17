@@ -5,11 +5,16 @@
 # Parameters - these can be modified by passing in as ENVIRONMENT variables.
 #              Default values are found to right of the := variable.
 PERF_ONNX=${PERF_ONNX:="./bin/perf_onnx"}
-MIGRAPHX_LIBS=${MIGRAPHX_LIBS:="./lib"}
+MIGRAPHX_LIBS=${MIGRAPHX_LIBS:="/opt/rocm/lib"}
 ONNX_DIR=${ONNX_DIR:="./onnx"}
 OUTPUT_DIR=${OUTPUT_DIR:="./output"}
 TESTLIST=${TESTLIST:=`ls onnx`}
 TIMESTAMP=${TIMESTAMP:=`date '+%Y-%m-%d-%H:%M:%S'`}
+
+if [ ! -f ${MIGRAPHX_LIBS}/libmigraphx.so ]; then
+    echo FAIL migraphx library not found
+    exit 1
+fi
 
 export LD_LIBRARY_PATH=${MIGRAPHX_LIBS}
 
