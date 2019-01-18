@@ -11,10 +11,21 @@ OUTPUT_DIR=${OUTPUT_DIR:="./output"}
 TESTLIST=${TESTLIST:=`ls onnx`}
 TIMESTAMP=${TIMESTAMP:=`date '+%Y-%m-%d-%H:%M:%S'`}
 RUNTUNE=${RUNTUNE:=0}
+RUNPROFILE=${RUNPROFILE:=0}
 
 if [ ! -f ${MIGRAPHX_LIBS}/libmigraphx.so ]; then
     echo FAIL migraphx library not found
     exit 1
+fi
+
+tunecmd=""
+if [ $RUNTUNE != 0 ]; then
+    tunecmd="MIOPEN_FIND_ENFORCE=3"
+fi
+
+profilecmd=""
+if [ $RUNPROFILE != 0 ]; then
+    profilecmd="HCC_PROFILE=2"
 fi
 
 export LD_LIBRARY_PATH=${MIGRAPHX_LIBS}
@@ -27,8 +38,8 @@ do
     testerr=${OUTPUT_DIR}/$testname-${TIMESTAMP}.err
 
     echo $TIMESTAMP " running " $testname
-    if [ $RUNTUNE != 0 ]; then
-	env MIOPEN_FIND_ENFORCE=3 ${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr
+    if [ $RUNTUNE != 0 -o $RUNPROFILE != 0 ]; then
+	env $tunecmd $profilecmd ${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr
     else
 	${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr	
     fi
@@ -36,6 +47,9 @@ do
 	rate=`awk -F'[ /]' '{ print $2 }' lastresult`
 	imagepersec=`echo $rate \* $batchsize | bc`
 	echo "PASS " $imagepersec
+	if [ $RUNPROFILE != 0 ]; then
+	    rpt $testerr > ${OUTPUT_DIR}/$testname-${TIMESTAMP}.rpt
+	fi
     else
 	echo FAIL `cat $testerr`
     fi
