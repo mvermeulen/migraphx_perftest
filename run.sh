@@ -22,6 +22,7 @@ export LD_LIBRARY_PATH=${MIGRAPHX_LIBS}
 for test in ${TESTLIST}
 do
     testname=`basename $test .onnx`
+    batchsize=`echo $testname | perl -ne 'print $1 if /.*i([0-9]+).*/'`
     testout=${OUTPUT_DIR}/$testname-${TIMESTAMP}.out
     testerr=${OUTPUT_DIR}/$testname-${TIMESTAMP}.err
 
@@ -31,8 +32,10 @@ do
     else
 	${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr	
     fi
-    if grep "Total time" $testout > lastresult; then
-	echo PASS `cat lastresult`
+    if grep "Rate: " $testout > lastresult; then
+	rate=`awk -F'[ /]' '{ print $2 }' lastresult`
+	imagepersec=`echo $rate \* $batchsize | bc`
+	echo "PASS " $imagepersec
     else
 	echo FAIL `cat $testerr`
     fi
