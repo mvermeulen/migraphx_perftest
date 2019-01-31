@@ -10,11 +10,18 @@ ONNX_DIR=${ONNX_DIR:="./onnx"}
 OUTPUT_DIR=${OUTPUT_DIR:="./output"}
 TESTLIST=${TESTLIST:=`ls onnx`}
 TIMESTAMP=${TIMESTAMP:=`date '+%Y-%m-%d-%H:%M:%S'`}
+RUNTUNE=${RUNTUNE:=0}
 
 if [ ! -f ${MIGRAPHX_LIBS}/libmigraphx.so ]; then
     echo FAIL migraphx library not found
     exit 1
 fi
+
+tunecmd=""
+if [ $RUNTUNE != 0 ]; then
+    tunecmd="env MIOPEN_FIND_ENFORCE=3 "
+fi
+
 
 export LD_LIBRARY_PATH=${MIGRAPHX_LIBS}
 
@@ -26,7 +33,7 @@ do
     testerr=${OUTPUT_DIR}/$testname-${TIMESTAMP}.err
 
     echo $TIMESTAMP " running " $testname
-    ${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr
+    $tunecmd ${PERF_ONNX} ${ONNX_DIR}/$test 1>$testout 2>$testerr
 
     if grep "Rate: " $testout > lastresult; then
 	rate=`awk -F'[ /]' '{ print $2 }' lastresult`
