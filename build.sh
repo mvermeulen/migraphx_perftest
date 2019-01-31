@@ -22,14 +22,14 @@ git pull > $OUTPUT_DIR/git-pull.${TIMESTAMP}.txt 2>&1
 
 # Build new copies
 echo "Building MIGraphX (see $OUTPUT_DIR/rbuild.${TIMESTAMP}.txt)"
-rbuild build -d depend > $OUTPUT_DIR/rbuild.${TIMESTAMP}.txt 2>&1
+rbuild build -d depend --cxx=/opt/rocm/bin/hcc > $OUTPUT_DIR/rbuild.${TIMESTAMP}.txt 2>&1
 
 # Run the tests to make sure all is OK
 echo "Checking MIGraphX (see $OUTPUT_DIR/check.${TIMESTAMP}.txt)"
 cd build && make check >$OUTPUT_DIR/check.${TIMESTAMP}.txt 2>&1
 cd ../..
 
-if grep "100% tests passed" $OUTPUT_DIR/check.${TIMESTAMP}; then
+if grep "100% tests passed" $OUTPUT_DIR/check.${TIMESTAMP}.txt; then
     cp AMDMIGraphX/build/src/*.so lib
     cp AMDMIGraphX/build/src/onnx/*.so lib    
     cp AMDMIGraphX/build/src/targets/*/*.so lib    
