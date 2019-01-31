@@ -6,7 +6,7 @@
 #              Default values are found to right of the := variable.
 set -x
 PERF_ONNX=${PERF_ONNX:="./bin/perf_onnx"}
-MIGRAPHX_LIBS=${MIGRAPHX_LIBS:="/opt/rocm/lib"}
+MIGRAPHX_LIBS=${MIGRAPHX_LIBS:="./lib"}
 ONNX_DIR=${ONNX_DIR:="./onnx"}
 OUTPUT_DIR=${OUTPUT_DIR:="./output"}
 TESTLIST=${TESTLIST:=`ls onnx`}
