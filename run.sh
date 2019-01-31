@@ -4,7 +4,6 @@
 #
 # Parameters - these can be modified by passing in as ENVIRONMENT variables.
 #              Default values are found to right of the := variable.
-set -x
 PERF_ONNX=${PERF_ONNX:="./bin/perf_onnx"}
 MIGRAPHX_LIBS=${MIGRAPHX_LIBS:="./lib"}
 ONNX_DIR=${ONNX_DIR:="./onnx"}
